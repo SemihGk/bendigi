@@ -1,0 +1,13 @@
+{
+  "name": "Assignment",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "npm install && node server.js"
+  },
+  "license": "MIT",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "latest"
+  }
+}
