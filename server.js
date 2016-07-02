@@ -18,7 +18,7 @@ var express = require('express'),
     // cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
     appId: process.env.APP_ID || 'myAppId',
     masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
-    serverURL: process.env.SERVER_URL || 'https://localhost:1337/parse',  // Don't forget to change to https if needed
+    serverURL: process.env.SERVER_URL || 'https://localhost:3000/parse',  // Don't forget to change to https if needed
     // liveQuery: {
     //   classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
     // }
@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(expressValidator());
-var server = http.listen(process.env.PORT || 3000, function() {
+http.listen(process.env.PORT || 3000, function() {
   console.log("Great! App is ready.");
 });
 
