@@ -1,160 +1,10 @@
 // create the module and name it userApp
-var userApp = angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table', 'ngNotificationsBar']);
-
-userApp
-  .factory('User', ['$rootScope', '$http', '$q', '$timeout', '$location', 'notifications',
-    function($rootScope, $http, $q, $timeout, $location, notifications) {
-
-      function UserClass() {
-        this.user = {};
-        this.loggedin = false;
-      }
-
-      var User = new UserClass();
-      UserClass.prototype.login = function(user) {
-        var self = this;
-        $http.post('/login', {
-            email: user.email,
-            password: user.password
-          })
-          .success(function(response) {
-            if (response.success) {
-              $location.url('/home');
-              self.loggedin = true;
-              $rootScope.$emit('loggedin', self);
-              self.showNotification('showSuccess', 'logged in');
-            } else {
-              $rootScope.$emit('loggedin', self);
-              self.showNotification('showError', 'cannot log in');
-            }
-          })
-          .error(function(response) {
-            if (response.success) {
-              $location.url('/home');
-              self.loggedin = true;
-              $rootScope.$emit('loggedin', self);
-              self.showNotification('showSuccess', 'logged in');
-            } else {
-              $rootScope.$emit('loggedin', self);
-              self.showNotification('showError', 'cannot log in');
-            }
-          });
-      }
-
-      UserClass.prototype.register = function(user) {
-        var self = this;
-        $http.post('/addUser', {
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            password: user.password
-          })
-          .success(function(response) {
-            if (response.success) {
-              User.user = user;
-              self.showNotification('showSuccess', 'Registered in');
-              $location.url('login');
-            } else {
-              self.showNotification('showError', 'cannot register in');
-            }
-          })
-          .error(function(response) {
-            if (response.success) {
-              User.user = user;
-              self.showNotification('showSuccess', 'register in');
-              $location.url('login');
-            } else self.showNotification('showError', 'cannot register in');
-          });
-      }
-
-      UserClass.prototype.logout = function() {
-        this.user = {};
-        this.loggedin = false;
-        $rootScope.$emit('loggedin', this);
-        $location.url('/login');
-      };
-
-      UserClass.prototype.getUsers = function() {
-        var self = this;
-        $http.get('/getUsers')
-          .success(function(response) {
-            if (response.success) {
-              $rootScope.$emit('listusers', response);
-            }
-          })
-          .error(function(response) {
-            if (response.success) {
-              $rootScope.$emit('listusers', response);
-            }
-          });
-      }
-
-      UserClass.prototype.removeUser = function(user) {
-        var self = this;
-        $http.post('/removeUser', {
-            id: user._id
-          })
-          .success(function(response) {
-            if (response.success) {
-              self.getCars();
-              self.showNotification('showSuccess', 'Removed car');
-            } else {
-              self.showNotification('showError', 'Cannot removed  car');
-            }
-          })
-          .error(function(response) {
-            if (response.success) {
-              self.getCars();
-              self.showNotification('showSuccess', 'Removed car');
-            } else {
-              self.showNotification('showError', 'Cannot remove car');
-            }
-          });
-      }
-
-      UserClass.prototype.showNotification = function(type, msg) {
-        notifications[type]({
-          message: msg,
-          hideDelay: 1500, //ms
-          hide: true //bool
-        });
-      }
-
-
-      return User;
-    }
-  ]) // factory
-  .config(function($stateProvider, $urlRouterProvider) {
-    $stateProvider
-      .state("home", {
-        url: "/home",
-        templateUrl: "pages/home.html",
-        authenticate: true
-      })
-      .state("cars", {
-        url: "/cars",
-        templateUrl: "pages/cars.html",
-        authenticate: true
-      })
-      .state("register", {
-        url: "/register",
-        templateUrl: "pages/register.html",
-        authenticate: false
-      })
-      .state("login", {
-        url: "/login",
-        templateUrl: "pages/login.html",
-        authenticate: false
-      });
-    // Send to login if the URL was not found
-    $urlRouterProvider.otherwise("/login");
-  })
-  .controller('userController', function($scope, $rootScope, User) {
+angular.module('userApp')
+  .controller('bodyController', function($scope, $rootScope, User) {
     var self = this;
     self.loggedin = User.loggedin;
     self.cls = "body";
     $rootScope.$on('loggedin', function(event, args) {
-      console.log(args)
       self.loggedin = args.loggedin;
       self.cls = self.loggedin ? "" : "body";
     });
@@ -162,56 +12,67 @@ userApp
       User.logout();
     }
   })
-  .controller('carController', function($scope, User, $rootScope) {
+  .controller('userController', function($scope, User, $rootScope, ParseServer) {
     var self = this;
     $scope.selected = [];
 
     $scope.query = {
-      order: 'name',
+      order: 'firstname',
       limit: 5,
       page: 1
     };
 
-    $scope.car = {
-      model: null,
-      year: null,
-      millage: null
+    $scope.user = {
+      _id: null,
+      firstname: null,
+      lastname: null,
+      password: null,
+      email: null
     };
 
-    self.init = function() {
-      User.getCars();
+    self.headerText = 'Add User';
+    self.btnText = 'Save';
+
+    $scope.selectedItem = function(user) {
+      $scope.user = user;
+      self.headerText = 'Update User';
+      self.btnText = 'Update';
     }
 
-    self.addCar = function() {
-      var isEmpty = null;
-      var isInvalid = false;
-      _.forEach(_.keys($scope.car), function(key) {
-        if (key !== 'id' && !$scope.car[key]) isEmpty = key;
+    $scope.deselectedItem = function() {
+      $scope.user = {
+        _id: null,
+        firstname: null,
+        lastname: null,
+        password: null,
+        email: null
+      };
+      self.headerText = 'Add User';
+      self.btnText = 'Save';
+    }
+
+    self.init = function() {
+      ParseServer.setCallback(function(users) {
+        console.log(users);
       });
-      if (!isEmpty && (!parseInt($scope.car.year) || !parseInt($scope.car.millage))) isInvalid = true;
-      // console.log(isEmpty, isInvalid, !parseInt($scope.car.year), !parseInt($scope.car.millage))
-      if (isEmpty) {
-        User.showNotification('showError', 'Please check fields.');
-      } else if (isInvalid) {
-        User.showNotification('showError', 'Please check fields.');
+      ParseServer.GET('/parse/functions/users');
+    }
+
+    self.addUser = function() {
+      console.log($scope.user._id);
+      if($scope.user._id) {
+        User.update($scope.user);
       } else {
-        User.addCar($scope.car);
+        User.register($scope.user);
       }
     }
 
-    self.removeUser = function(car) {
-      User.removeUser(car);
+    self.removeUser = function(user) {
+      User.removeUser(user);
     }
 
     $rootScope.$on('listusers', function(event, args) {
-
-      $scope.cars = _.map(args.cars, function(car) {
-        var newCar = {};
-        _.each(_.keys(car), function(ky) {
-          newCar[ky.toLowerCase()] = car[ky];
-        });
-        return newCar;
-      });
+      $scope.users = args.users;
     });
   })
   .controller('loginController', function($scope, $rootScope, User) {
@@ -223,6 +84,14 @@ userApp
 
     self.login = function() {
       User.login(self.user);
+    }
+  })
+  .controller('homeController', function($scope, $rootScope, User) {
+    var self = this;
+    self.user = {
+      email: User.user.email,
+      firstname: User.user.firstname,
+      lastname: User.user.lastname
     }
   })
   .controller('registerController', function($scope, $rootScope, User) {
@@ -238,13 +107,3 @@ userApp
       User.register(self.user);
     }
   });
-
-userApp.run(function($rootScope, $state, User) {
-  $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-    if (toState.authenticate && !User.loggedin) {
-      // User isn’t authenticated
-      $state.transitionTo("login");
-      event.preventDefault();
-    }
-  });
-});

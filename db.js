@@ -59,16 +59,10 @@ var UserSchema = new Schema({
   }
 });
 
-
-var conn = mongoose.createConnection();
-db.conn = conn;
-
-conn.open(process.env.MONGODB_URI, function(err) {
+mongoose.model('User', UserSchema);
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://heroku_vvb66sxr:2lj8nruincei3tflge87pv46b7@ds011735.mlab.com:11735/heroku_vvb66sxr', function(err) {
   if (err) {
     console.log('Could not connect to database: ' + err);
     process.exit(1);
   }
-  mongoose.model('User', UserSchema);
 });
-
-module.exports = db;
