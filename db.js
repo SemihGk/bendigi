@@ -63,7 +63,7 @@ var UserSchema = new Schema({
 var conn = mongoose.createConnection();
 db.conn = conn;
 
-conn.open('localhost', 'bendigi', function(err) {
+conn.open(process.env.MONGODB_URI, function(err) {
   if (err) {
     console.log('Could not connect to database: ' + err);
     process.exit(1);
