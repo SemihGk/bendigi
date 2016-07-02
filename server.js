@@ -5,7 +5,7 @@
  */
 var express = require('express'),
   app = express(),
-  http = require('http').Server(app),
+  http = require('http').createServer(app),
   path = require('path'),
   db = require('./db'),
   ParseServer = require('parse-server').ParseServer,
@@ -94,3 +94,5 @@ db.conn.on('open', function() {
       });
     });
 });
+
+ParseServer.createLiveQueryServer(http);

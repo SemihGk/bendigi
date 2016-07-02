@@ -7,8 +7,7 @@ var mongoose = require('mongoose'),
   User = mongoose.model('User'),
   async = require('async'),
   userjs;
-
-userjs = module.exports  = function(System) {
+module.exports = function(System) {
   return {
     /*
     * Login authentication
@@ -38,6 +37,7 @@ userjs = module.exports  = function(System) {
      */
     addUser: function(user, callback) {
       var newUser = new User(user);
+      console.log(newUser);
       newUser.save(function(err) {
         console.log(err, 'here');
         if(err) return callback(err);

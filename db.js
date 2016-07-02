@@ -68,7 +68,6 @@ conn.open('localhost', 'bendigi', function(err) {
     console.log('Could not connect to database: ' + err);
     process.exit(1);
   }
-
   mongoose.model('User', UserSchema);
 });
 

@@ -2,6 +2,9 @@
   "name": "Bendigi Assignment",
   "version": "0.0.1",
   "author": "Semih GOKCEOGLU",
+  "engines": {
+    "node": "5.5.0"
+  },
   "scripts": {
     "start": "npm install && node server.js"
   },
