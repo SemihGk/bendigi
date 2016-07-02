@@ -70,17 +70,28 @@ app.route('/login')
 
 app.route('/getUsers')
   .get(function(req, res) {
-    user.getUsers(function(err, users) {
-      if (err) return res.status(500).send(err);
-      // var filteredUsers = _.map(users, function(user) {
-      // var copied = user.toObject();
-      // delete copied.password;
-      // return copied;
-      // });
-      res.send({
-        users: users
-      });
-    }); // users.getUsers
+    Parse.Cloud.run('users', {}, {
+      success:function(result) {
+        res.send({
+          users: result
+        });
+      },
+      error: function(err) {
+        return res.status(500).send(err);
+      }
+    })
+
+    // user.getUsers(function(err, users) {
+    //   if (err) return res.status(500).send(err);
+    //   // var filteredUsers = _.map(users, function(user) {
+    //   // var copied = user.toObject();
+    //   // delete copied.password;
+    //   // return copied;
+    //   // });
+    //   res.send({
+    //     users: users
+    //   });
+    // }); // users.getUsers
   });
 
 app.route('/addUser')

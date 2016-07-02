@@ -7,7 +7,7 @@ Parse.Cloud.define("users", function(request, response) {
       response.success(results);
     },
     error: function() {
-      response.error("movie lookup failed");
+      response.error("failed");
     }
   });
 });
