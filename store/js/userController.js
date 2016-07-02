@@ -13,17 +13,9 @@ userApp
       var User = new UserClass();
       UserClass.prototype.login = function(user) {
         var self = this;
-        $http({
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            url: 'http://test-api.evermight.com/login.php',
-            data: $.param({
-              email: user.email,
-              password: user.password,
-              appkey: 18
-            })
+        $http.post('/login', {
+            email: user.email,
+            password: user.password
           })
           .success(function(response) {
             if (response.success) {
@@ -51,19 +43,11 @@ userApp
 
       UserClass.prototype.register = function(user) {
         var self = this;
-        $http({
-            url: 'http://test-api.evermight.com/register.php',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: $.param({
-              firstname: user.firstName,
-              lastname: user.lastName,
-              email: user.email,
-              password: user.password,
-              appkey: 18
-            })
+        $http.post('/addUser', {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            password: user.password
           })
           .success(function(response) {
             if (response.success) {
@@ -90,75 +74,25 @@ userApp
         $location.url('/login');
       };
 
-      UserClass.prototype.getCars = function() {
+      UserClass.prototype.getUsers = function() {
         var self = this;
-        $http({
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            url: 'http://test-api.evermight.com/listcar.php',
-            data: $.param({
-              appkey: 18
-            })
-          })
+        $http.get('/getUsers')
           .success(function(response) {
             if (response.success) {
-              $rootScope.$emit('listcars', response);
+              $rootScope.$emit('listusers', response);
             }
           })
           .error(function(response) {
             if (response.success) {
-              $rootScope.$emit('listcars', response);
+              $rootScope.$emit('listusers', response);
             }
           });
       }
 
-      UserClass.prototype.addCar = function(car) {
+      UserClass.prototype.removeUser = function(user) {
         var self = this;
-        $http({
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            url: 'http://test-api.evermight.com/addcar.php',
-            data: $.param({
-              model: car.model,
-              millage: car.millage,
-              year: car.year,
-              appkey: 18
-            })
-          })
-          .success(function(response) {
-            if (response.success) {
-              self.getCars();
-              self.showNotification('showSuccess', 'Added new car');
-            } else {
-              self.showNotification('showError', 'Cannot added new car');
-            }
-          })
-          .error(function(response) {
-            if (response.success) {
-              self.getCars();
-              self.showNotification('showSuccess', 'Added new car');
-            } else {
-              self.showNotification('showError', 'Cannot Added new car');
-            }
-          });
-      }
-
-      UserClass.prototype.removeCar = function(car) {
-        var self = this;
-        $http({
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            url: 'http://test-api.evermight.com/deletecar.php',
-            data: $.param({
-              id: car.id,
-              appkey: 18
-            })
+        $http.post('/removeUser', {
+            id: user._id
           })
           .success(function(response) {
             if (response.success) {
@@ -265,11 +199,11 @@ userApp
       }
     }
 
-    self.removeCar = function(car) {
-      User.removeCar(car);
+    self.removeUser = function(car) {
+      User.removeUser(car);
     }
 
-    $rootScope.$on('listcars', function(event, args) {
+    $rootScope.$on('listusers', function(event, args) {
 
       $scope.cars = _.map(args.cars, function(car) {
         var newCar = {};
@@ -294,31 +228,14 @@ userApp
   .controller('registerController', function($scope, $rootScope, User) {
     var self = this;
     self.user = {
-      userName: null,
-      lastName: null,
+      firstname: null,
+      lastname: null,
       email: null,
       password: null
     }
 
     self.register = function() {
-      var isEmpty = null;
-      var isInvalidName = false;
-      var isInvalidPass = false;
-      _.forEach(_.keys(self.user), function(key) {
-        if (key !== 'id' && !self.user[key]) isEmpty = key;
-      });
-      console.log(isEmpty)
-      if (!isEmpty && self.user.userName.length < 3) isInvalidName = true;
-      if (!isEmpty && self.user.password.length < 8) isInvalidPass = true;
-      if (isEmpty) {
-        User.showNotification('showError', 'Please check fields.');
-      } else if (isInvalidName) {
-        User.showNotification('showError', 'Minimum name length is 4.');
-      } else if (isInvalidPass) {
-        User.showNotification('showError', 'Minimum pass length is 8.');
-      } else {
-        User.register(self.user);
-      }
+      User.register(self.user);
     }
   });
 
