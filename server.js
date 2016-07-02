@@ -8,6 +8,7 @@ var express = require('express'),
   http = require('http').createServer(app),
   path = require('path'),
   db = require('./db'),
+  mongoose = require('mongoose'),
   ParseServer = require('parse-server').ParseServer,
   expressValidator = require('express-validator'),
   databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI,
@@ -15,8 +16,8 @@ var express = require('express'),
 
   var api = new ParseServer({
     databaseURI: databaseUri || 'mongodb://localhost:27017/bendigi',
-    // cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-    appId: process.env.APP_ID || 'myAppId',
+    cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
+    appId: process.env.APP_ID || 'bendigi',
     masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
     serverURL: process.env.SERVER_URL || 'https://localhost:3000/parse',  // Don't forget to change to https if needed
     // liveQuery: {
