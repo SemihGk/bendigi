@@ -102,40 +102,40 @@ module.exports = function(System) {
           // });
         }],
         send_email: ['save_db', function(next) {
-          var mailgunKey = process.env.MAILGUN_KEY;
-          var domainName = process.env.MAILGUN_DOMAIN;
-          var mailgun = require('mailgun-js')({
-            apiKey: mailgunKey,
-            domain: domainName
-          });
-
-          var data = {
-            from: process.env.EMAIL || 'semih01905@gmail.com',
-            to: user.email,
-            subject: 'Registration',
-            text: "Congratilations! You are registered the system!"
-          };
-          console.log(mailgunKey, domainName, data);
-          mailgun.messages().send(data, function(err, body) {
-            if (err) return next(err);
-            next(null, body);
-          });
-          // Parse.Cloud.httpRequest({
-          //   method: "POST",
-          //   url: "https://api:" + mailgunKey + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
-          //   body: {
-          //     to: user.email,
-          //     from: process.env.EMAIL || 'semih01905@gmail.com',
-          //     subject: "Hello!",
-          //     text: "Congratilations! You are registered the system!"
-          //   }
-          // }).then(function(httpResponse) {
-          //   console.log(httpResponse);
-          //   next(null, 'Email is sent.')
-          // }, function(httpResponse) {
-          //   console.log(httpResponse);
-          //   next('Email could not be sent');
+          var mailgunKey = process.env.MAILGUN_KEY || 'key-837e8268dd4cebc2ecf1ff9a74ae9436';
+          var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
+          // var mailgun = require('mailgun-js')({
+          //   apiKey: mailgunKey,
+          //   domain: domainName
           // });
+          //
+          // var data = {
+          //   from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
+          //   to: user.email,
+          //   subject: 'Registration',
+          //   text: "Congratilations! You are registered the system!"
+          // };
+          // console.log(mailgunKey, domainName, data);
+          // mailgun.messages().send(data, function(err, body) {
+          //   if (err) return next(err);
+          //   next(null, body);
+          // });
+          Parse.Cloud.httpRequest({
+            method: "POST",
+            url: "https://api:" + mailgunKey + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
+            body: {
+              to: user.email,
+              from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
+              subject: "Registration",
+              text: "Congratilations! You are registered the system!"
+            }
+          }).then(function(httpResponse) {
+            console.log(httpResponse);
+            next(null, 'Email is sent.')
+          }, function(httpResponse) {
+            console.log(httpResponse);
+            next('Email could not be sent');
+          });
         }]
       }, function(err, results) {
         if (err) return callback(err);
