@@ -40,8 +40,7 @@ module.exports = function(System) {
     addUser: function(user, callback) {
       /**
        * First process : saving db
-       * Then saving mailchimp and hubspot simultaneeously
-       * Then send email via mailgun
+       * Then saving mailchimp and hubspot plus sending email processes simultaneeously
        **/
       async.auto({
         //save user into database
@@ -102,25 +101,41 @@ module.exports = function(System) {
             next(err);
           });
         }],
-        send_email: ['save_hubspot', 'save_mailchimp', function(next) {
-          var mailgunKey = process.env.MAILGUN_KEY || '96de72496357674aa120abe09b88e731';
+        send_email: ['save_db', function(next) {
+          var mailgunKey = process.env.MAILGUN_KEY || 'key-96de72496357674aa120abe09b88e731';
           var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
-          Parse.Cloud.httpRequest({
-            method: "POST",
-            url: "https://api:" + mailgunKey + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
-            body: {
-              to: user.email,
-              from: process.env.EMAIL || 'semih01@mail.com',
-              subject: "Hello!",
-              text: "Congratilations! You are registered the system!"
-            }
-          }).then(function(httpResponse) {
-            console.log(httpResponse);
-            next(null, 'Email is sent.')
-          }, function(httpResponse) {
-            console.log(httpResponse);
-            next('Email could not be sent');
+          var mailgun = require('mailgun-js')({
+            apiKey: mailgunKey,
+            domain: domainName
           });
+
+          var data = {
+            from: process.env.EMAIL || 'semih01905@gmail.com',
+            to: user.email,
+            subject: 'Registration',
+            text: "Congratilations! You are registered the system!"
+          };
+
+          mailgun.messages().send(data, function(error, body) {
+            if (err) return next(err);
+            next(null, body);
+          });
+          // Parse.Cloud.httpRequest({
+          //   method: "POST",
+          //   url: "https://api:" + mailgunKey + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
+          //   body: {
+          //     to: user.email,
+          //     from: process.env.EMAIL || 'semih01905@gmail.com',
+          //     subject: "Hello!",
+          //     text: "Congratilations! You are registered the system!"
+          //   }
+          // }).then(function(httpResponse) {
+          //   console.log(httpResponse);
+          //   next(null, 'Email is sent.')
+          // }, function(httpResponse) {
+          //   console.log(httpResponse);
+          //   next('Email could not be sent');
+          // });
         }]
       }, function(err, results) {
         if (err) return callback(err);
