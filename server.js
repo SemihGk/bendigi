@@ -68,7 +68,7 @@ app.route('/login')
     })
   });
 
-app.route('/getUsers')
+app.route('/users')
   .post(function(req, res) {
     Parse.Cloud.run('users', {}, {
       success:function(result) {
