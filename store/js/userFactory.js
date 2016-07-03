@@ -132,7 +132,7 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
     }
     ParseServerClass.prototype.GET = function(path, callback) {
       var self = this;
-      this.xhttp.open("GET", self.url + path, true);
+      this.xhttp.open("POST", self.url + path, true);
       this.xhttp.setRequestHeader("X-Parse-Application-Id", "bendigi");
       this.xhttp.setRequestHeader("Content-type", "application/json");
       this.xhttp.send(null);

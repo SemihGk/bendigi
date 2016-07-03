@@ -52,11 +52,11 @@ angular.module('userApp')
     }
 
     self.init = function() {
-      User.getUsers();
-      // ParseServer.setCallback(function(users) {
-      //   console.log(users);
-      // });
-      // ParseServer.GET('/parse/functions/users');
+      // User.getUsers();
+      ParseServer.setCallback(function(users) {
+        console.log(users);
+      });
+      ParseServer.GET('users');
     }
 
     self.addUser = function() {
