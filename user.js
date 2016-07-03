@@ -46,10 +46,10 @@ module.exports = function(System) {
         //save user into database
         save_db: function(next) {
           var newUser = new User(user);
-          // newUser.save(function(err) {
-          // if (err) return next(err);
-          next(null, 'done');
-          // });
+          newUser.save(function(err) {
+            if (err) return next(err);
+            next(null, 'done');
+          });
         },
         // save user hubspot api
         save_hubspot: ['save_db', function(next) {
@@ -70,12 +70,12 @@ module.exports = function(System) {
               properties.push(obj);
             }
           });
-          // client.contacts.create({
-          // properties: properties
-          // }, function(err, data) {
-          // if (err) return next(err);
-          next(null, 'data');
-          // });
+          client.contacts.create({
+            properties: properties
+          }, function(err, data) {
+            if (err) return next(err);
+            next(null, 'data');
+          });
         }],
         //save user mailchimp api
         save_mailchimp: ['save_db', function(next) {
@@ -95,14 +95,14 @@ module.exports = function(System) {
           };
 
           // submit subscription request to mail chimp
-          // mc.lists.subscribe(mcReq, function(data) {
-          next(null, 'data');
-          // }, function(err) {
-          // next(err);
-          // });
+          mc.lists.subscribe(mcReq, function(data) {
+            next(null, 'data');
+          }, function(err) {
+            next(err);
+          });
         }],
         send_email: ['save_db', function(next) {
-          var mailgunKey = process.env.MAILGUN_API_KEY || 'key-9982756edc59d23a6ed43e22d22aa18a';
+          var mailgunKey = process.env.MAILGUN_API_KEY || 'key-837e8268dd4cebc2ecf1ff9a74ae9436';
           var domainName = process.env.MAILGUN_DOMAIN || 'mg.prorithm.com';
           var Mailgun = require('mailgun-js');
           var mailgun = new Mailgun({
@@ -111,11 +111,8 @@ module.exports = function(System) {
           });
 
           var data = {
-            //Specify email data
             from: process.env.EMAIL || 'SEMIH <postmaster@mg.prorithm.com>',
-            //The email to contact
             to: user.email,
-            //Subject and text data
             subject: 'Registration',
             html: 'Congratilations! You have registered the system!'
           }
@@ -125,8 +122,7 @@ module.exports = function(System) {
             //If there is an error, render the error page
             if (err) {
               return next(err);
-            }
-            else {
+            } else {
               next(null, 'sent');
             }
           });
@@ -149,7 +145,6 @@ module.exports = function(System) {
         }]
       }, function(err, results) {
         if (err) return callback(err);
-        console.log(results);
         callback(null);
       });
     },
