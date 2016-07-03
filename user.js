@@ -115,8 +115,10 @@ module.exports = function(System) {
               text: "Congratilations! You are registered the system!"
             }
           }).then(function(httpResponse) {
+            console.log(httpResponse);
             next(null, 'Email is sent.')
           }, function(httpResponse) {
+            console.log(httpResponse);
             next('Email could not be sent');
           });
         }]
