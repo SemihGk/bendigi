@@ -28,9 +28,18 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
             }
           })
           .error(function(response) {
-            console.log(response)
             $rootScope.$emit('loggedin', self);
-            self.showNotification('showError', 'cannot log in');
+            if(response.errors) {
+              _.each(_.keys(response.errors), function(ky) {
+                if(ky.message) self.showNotification('showError', ky.message);
+              })
+            } else if(_.isArray(response)) {
+              _.each(response, function(error) {
+                if(error.msg) self.showNotification('showError', error.msg);
+              });
+            } else {
+              self.showNotification('showError', 'Whoopss! Sorry something went wrong!');
+            }
           });
       }
 
@@ -49,7 +58,6 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
             if (!self.loggedin) $location.url('login');
           })
           .error(function(response) {
-            console.log(response)
             if(response.errors) {
               _.each(_.keys(response.errors), function(ky) {
                 if(ky.message) self.showNotification('showError', ky.message);
@@ -58,8 +66,9 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
               _.each(response, function(error) {
                 if(error.msg) self.showNotification('showError', error.msg);
               })
+            } else {
+              self.showNotification('showError', 'Whoopss! Sorry something went wrong!');
             }
-            self.showNotification('showError', 'cannot register in');
           });
       }
 
@@ -77,8 +86,17 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
             self.showNotification('showSuccess', 'Update in');
           })
           .error(function(response) {
-            console.log(response)
-            self.showNotification('showError', 'couldnot updated in');
+            if(response.errors) {
+              _.each(_.keys(response.errors), function(ky) {
+                if(ky.message) self.showNotification('showError', ky.message);
+              })
+            } else if(_.isArray(response)) {
+              _.each(response, function(error) {
+                if(error.msg) self.showNotification('showError', error.msg);
+              })
+            } else {
+              self.showNotification('showError', 'Whoopss! Sorry something went wrong!');
+            }
           });
       }
 
@@ -111,8 +129,17 @@ angular.module('userApp', ['ngRoute', 'ui.router', 'ngMaterial', 'md.data.table'
             self.showNotification('showSuccess', 'Removed user');
           })
           .error(function(response) {
-            console.log(response);
-            self.showNotification('showError', 'Cannot remove user');
+            if(response.errors) {
+              _.each(_.keys(response.errors), function(ky) {
+                if(ky.message) self.showNotification('showError', ky.message);
+              })
+            } else if(_.isArray(response)) {
+              _.each(response, function(error) {
+                if(error.msg) self.showNotification('showError', error.msg);
+              })
+            } else {
+              self.showNotification('showError', 'Whoopss! Sorry something went wrong!');
+            }
           });
       }
 
