@@ -116,7 +116,7 @@ module.exports = function(System) {
             text: "Congratilations! You are registered the system!"
           };
 
-          mailgun.messages().send(data, function(error, body) {
+          mailgun.messages().send(data, function(err, body) {
             if (err) return next(err);
             next(null, body);
           });
