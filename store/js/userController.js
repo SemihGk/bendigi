@@ -56,7 +56,7 @@ angular.module('userApp')
       ParseServer.setCallback(function(users) {
         console.log(users);
       });
-      ParseServer.GET('users');
+      ParseServer.GET('/users');
     }
 
     self.addUser = function() {
