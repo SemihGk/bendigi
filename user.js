@@ -107,7 +107,7 @@ module.exports = function(System) {
           var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
           Parse.Cloud.httpRequest({
             method: "POST",
-            url: "https://api:" + key + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
+            url: "https://api:" + mailgunKey + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
             body: {
               to: user.email,
               from: process.env.EMAIL || 'semih01@mail.com',
