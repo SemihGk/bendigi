@@ -74,7 +74,7 @@ module.exports = function(System) {
             // properties: properties
           // }, function(err, data) {
             // if (err) return next(err);
-            next(null, data);
+            next(null, 'data');
           // });
         }],
         //save user mailchimp api
@@ -96,7 +96,7 @@ module.exports = function(System) {
 
           // submit subscription request to mail chimp
           // mc.lists.subscribe(mcReq, function(data) {
-            next(null, data);
+            next(null, 'data');
           // }, function(err) {
             // next(err);
           // });
