@@ -70,6 +70,13 @@ angular.module('userApp')
 
     self.removeUser = function(user) {
       User.removeUser(user);
+      $scope.user = {
+        _id: null,
+        firstname: null,
+        lastname: null,
+        password: null,
+        email: null
+      };
     }
 
     $rootScope.$on('listusers', function(event, args) {
