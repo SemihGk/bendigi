@@ -70,12 +70,12 @@ module.exports = function(System) {
               properties.push(obj);
             }
           });
-          client.contacts.create({
-            properties: properties
-          }, function(err, data) {
-            if (err) return next(err);
+          // client.contacts.create({
+            // properties: properties
+          // }, function(err, data) {
+            // if (err) return next(err);
             next(null, data);
-          });
+          // });
         }],
         //save user mailchimp api
         save_mailchimp: ['save_db', function(next) {
@@ -95,15 +95,15 @@ module.exports = function(System) {
           };
 
           // submit subscription request to mail chimp
-          mc.lists.subscribe(mcReq, function(data) {
+          // mc.lists.subscribe(mcReq, function(data) {
             next(null, data);
-          }, function(err) {
-            next(err);
-          });
+          // }, function(err) {
+            // next(err);
+          // });
         }],
         send_email: ['save_db', function(next) {
-          var mailgunKey = process.env.MAILGUN_KEY || 'key-96de72496357674aa120abe09b88e731';
-          var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
+          var mailgunKey = process.env.MAILGUN_KEY;
+          var domainName = process.env.MAILGUN_DOMAIN;
           var mailgun = require('mailgun-js')({
             apiKey: mailgunKey,
             domain: domainName
@@ -115,7 +115,7 @@ module.exports = function(System) {
             subject: 'Registration',
             text: "Congratilations! You are registered the system!"
           };
-
+          console.log(mailgunKey, domainName, data);
           mailgun.messages().send(data, function(err, body) {
             if (err) return next(err);
             next(null, body);
