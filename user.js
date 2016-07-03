@@ -71,10 +71,10 @@ module.exports = function(System) {
             }
           });
           // client.contacts.create({
-            // properties: properties
+          // properties: properties
           // }, function(err, data) {
-            // if (err) return next(err);
-            next(null, 'data');
+          // if (err) return next(err);
+          next(null, 'data');
           // });
         }],
         //save user mailchimp api
@@ -96,46 +96,56 @@ module.exports = function(System) {
 
           // submit subscription request to mail chimp
           // mc.lists.subscribe(mcReq, function(data) {
-            next(null, 'data');
+          next(null, 'data');
           // }, function(err) {
-            // next(err);
+          // next(err);
           // });
         }],
         send_email: ['save_db', function(next) {
-          var mailgunKey = process.env.MAILGUN_KEY || 'key-837e8268dd4cebc2ecf1ff9a74ae9436';
-          var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
-          // var mailgun = require('mailgun-js')({
-          //   apiKey: mailgunKey,
-          //   domain: domainName
-          // });
-          //
-          // var data = {
-          //   from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
-          //   to: user.email,
-          //   subject: 'Registration',
-          //   text: "Congratilations! You are registered the system!"
-          // };
-          // console.log(mailgunKey, domainName, data);
-          // mailgun.messages().send(data, function(err, body) {
-          //   if (err) return next(err);
-          //   next(null, body);
-          // });
-          Parse.Cloud.httpRequest({
-            method: "POST",
-            url: "https://api:" + mailgunKey + "@api.mailgun.net/v2/" + domainName + "/messages",
-            body: {
-              to: user.email,
-              from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
-              subject: "Registration",
-              text: "Congratilations! You are registered the system!"
-            }
-          }).then(function(httpResponse) {
-            console.log(httpResponse);
-            next(null, 'Email is sent.')
-          }, function(httpResponse) {
-            console.log(httpResponse);
-            next('Email could not be sent');
+          var mailgunKey = process.env.MAILGUN_API_KEY || 'key-9982756edc59d23a6ed43e22d22aa18a';
+          var domainName = process.env.MAILGUN_DOMAIN || 'mg.prorithm.com';
+          var Mailgun = require('mailgun-js');
+          var mailgun = new Mailgun({
+            apiKey: mailgunKey,
+            domain: domainName
           });
+
+          var data = {
+            //Specify email data
+            from: process.env.EMAIL || 'SEMIH <postmaster@mg.prorithm.com>',
+            //The email to contact
+            to: user.email,
+            //Subject and text data
+            subject: 'Registration',
+            html: 'Congratilations! You have registered the system!'
+          }
+
+          //Invokes the method to send emails given the above data with the helper library
+          mailgun.messages().send(data, function(err, body) {
+            //If there is an error, render the error page
+            if (err) {
+              return next(err);
+            }
+            else {
+              next(null, 'sent');
+            }
+          });
+          // Parse.Cloud.httpRequest({
+          //   method: "POST",
+          //   url: "https://api:" + mailgunKey + "@api.mailgun.net/v2/" + domainName + "/messages",
+          //   body: {
+          //     to: user.email,
+          //     from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
+          //     subject: "Registration",
+          //     text: "Congratilations! You are registered the system!"
+          //   }
+          // }).then(function(httpResponse) {
+          //   console.log(httpResponse);
+          //   next(null, 'Email is sent.')
+          // }, function(httpResponse) {
+          //   console.log(httpResponse);
+          //   next('Email could not be sent');
+          // });
         }]
       }, function(err, results) {
         if (err) return callback(err);
