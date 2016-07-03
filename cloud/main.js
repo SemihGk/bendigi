@@ -11,3 +11,17 @@ Parse.Cloud.define("users", function(request, response) {
     }
   });
 });
+
+Parse.Cloud.define("sendEmailToUser", function(request, response) {
+  client.sendEmail({
+    to: "email@example.com",
+    from: "MyMail@CloudCode.com",
+    subject: "Hello from Parse!",
+    text: "Using Parse and My Mail Module is great!"
+  }).then(function(httpResponse) {
+    response.success("Email sent!");
+  }, function(httpResponse) {
+    console.error(httpResponse);
+    response.error("Uh oh, something went wrong");
+  });
+});

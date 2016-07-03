@@ -39,27 +39,27 @@ module.exports = function(System) {
      */
     addUser: function(user, callback) {
       /**
-      * First process : saving db
-      * Then saving mailchimp and hubspot simultaneeously
-      * Then send email via mailgun
-      **/
+       * First process : saving db
+       * Then saving mailchimp and hubspot simultaneeously
+       * Then send email via mailgun
+       **/
       async.auto({
         //save user into database
         save_db: function(next) {
           var newUser = new User(user);
           // newUser.save(function(err) {
-            // if (err) return next(err);
-            next(null, 'done');
+          // if (err) return next(err);
+          next(null, 'done');
           // });
         },
         // save user hubspot api
         save_hubspot: ['save_db', function(next) {
           var client = new Client();
           client.useKey(process.env.HUBSPOT_TOKEN || 'aa5b14ea-90c7-4a29-a508-2f1d3675ea2b')
-          // var api = hubspot({
-          //   token: process.env.HUBSPOT_TOKEN || 'aa5b14ea-90c7-4a29-a508-2f1d3675ea2b',
-          //   version: 'v3'
-          // });
+            // var api = hubspot({
+            //   token: process.env.HUBSPOT_TOKEN || 'aa5b14ea-90c7-4a29-a508-2f1d3675ea2b',
+            //   version: 'v3'
+            // });
 
           var properties = [];
           _.each(_.keys(user), function(ky) {
@@ -71,7 +71,9 @@ module.exports = function(System) {
               properties.push(obj);
             }
           });
-          client.contacts.create({ properties: properties }, function(err, data) {
+          client.contacts.create({
+            properties: properties
+          }, function(err, data) {
             if (err) return next(err);
             next(null, data);
           });
@@ -101,7 +103,24 @@ module.exports = function(System) {
           });
         }],
         send_email: ['save_hubspot', 'save_mailchimp', function(next) {
-
+          var mailgunKey =  process.env.MAILGUN_KEY || 'key-96de72496357674aa120abe09b88e731';
+          var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
+          Parse.Cloud.httpRequest({
+            method: "POST",
+            url: "https://api:" + key + "@api.mailgun.net/v3" + "/" + domainName + "/messages",
+            body: {
+              to: user.email,
+              from: process.env.EMAIL || 'semih01@mail.com',
+              subject: "Hello!",
+              text: "Congratilations! You are registered the system!"
+            }
+          }).then(function(httpResponse) {
+            if (options && options.success) {
+              next(null, 'Email is sent.')
+            }
+          }, function(httpResponse) {
+            next('Email could not be sent');
+          });
         }]
       }, function(err, results) {
         if (err) return callback(err);
