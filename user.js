@@ -128,10 +128,6 @@ module.exports = function(System) {
               from: process.env.EMAIL || 'SEMIH <postmaster@sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org>',
               subject: "Registration",
               text: "Congratilations! You are registered the system!"
-            },
-            headers : {
-                'content-type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + $base64.encode('api:key-XXXXXXXXXXXXX')
             }
           }).then(function(httpResponse) {
             console.log(httpResponse);
