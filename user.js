@@ -103,7 +103,7 @@ module.exports = function(System) {
           });
         }],
         send_email: ['save_hubspot', 'save_mailchimp', function(next) {
-          var mailgunKey = process.env.MAILGUN_KEY || 'key-96de72496357674aa120abe09b88e731';
+          var mailgunKey = process.env.MAILGUN_KEY || '96de72496357674aa120abe09b88e731';
           var domainName = process.env.MAILGUN_DOMAIN || 'sandboxf083666a930841d1be2e5fbc9156ef89.mailgun.org';
           Parse.Cloud.httpRequest({
             method: "POST",
